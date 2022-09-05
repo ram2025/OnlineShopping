@@ -7,6 +7,10 @@
     <title>Dashbord</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
     <style>
+        body {
+            background-color: whitesmoke;
+        }
+        
         .search {
             margin-left: 500px;
             padding: 20px;
@@ -57,13 +61,17 @@
         }
         
         .container-fluid {
-            background-color: lightgray;
+            background-color: lightseagreen;
+        }
+        
+        nav {
+            background: lightseagreen;
         }
         
         footer {
             text-align: center;
             padding: 10px;
-            background-color: lightgray;
+            background-color: lightseagreen;
             margin-top: 20px;
         }
         
@@ -85,23 +93,27 @@
         button:hover {
             background-color: green;
         }
+        
+        .warning {
+            color: red;
+        }
     </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg bg-light">
+    <nav class="navbar navbar-expand-lg ">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">SHINDE-SHOP</a>
+            <a class="navbar-brand" href="/">SHINDE-SHOP</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        <a class="nav-link active" aria-current="page" href="/">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
+                        <a class="nav-link" href="/profile">Profile</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -130,7 +142,7 @@
             </div><br />
             <div class="input">
                 <label for="password">Password :<input name="password" type="password" required/> </label><br />
-                <p>
+                <p class="warning">
                     <%= name %>
                 </p>
             </div>

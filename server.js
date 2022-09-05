@@ -34,6 +34,16 @@ var BookSchema = mongoose.Schema({
 
 var Book = mongoose.model('Book', BookSchema, 'bookstore');
 
+var ProfileSchema = mongoose.Schema({
+    user: String,
+    name: String,
+    gmail: String,
+    mobile: Number,
+    address: String
+});
+
+var Profile = mongoose.model('Profile', ProfileSchema, 'profiles');
+
 var ProductSchema = mongoose.Schema({
     user: String,
     data: Array
@@ -49,6 +59,17 @@ var UserSchema = mongoose.Schema({
 
 var User = mongoose.model('user', UserSchema, 'userdata');
 
+
+var VegiSchema = mongoose.Schema({
+    url: String,
+    name: String,
+    price: Number
+});
+
+var Vegi = mongoose.model('Vegi', BookSchema, 'vegitable');
+
+
+
 //middleWares
 app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
@@ -56,20 +77,22 @@ app.use(cookieParser());
 
 
 app.get('/', (req, res) => {
-    if (!req.session.isAuth) {
-        return res.render('./login.ejs', {
-            name: null,
-        });
-    }
     res.sendFile(path.resolve('./index.html'));
 });
 app.get('/clothes', async(req, res) => {
+    if (!req.session.isAuth) {
+        return res.redirect("/login");
+    }
     const data = await Book.find({});
     res.render('./clothes.ejs', { data: data });
 })
 
-app.get('/vegitable', (req, res) => {
-    res.status(200).sendFile(path.resolve('./vegi.html'));
+app.get('/vegitable', async(req, res) => {
+    if (!req.session.isAuth) {
+        return res.redirect("/login");
+    }
+    const data = await Vegi.find({});
+    res.render('./vegi.ejs', { data: data });
 });
 
 app.post('/book/:id', async(req, res) => {
@@ -77,16 +100,30 @@ app.post('/book/:id', async(req, res) => {
         return res.redirect("/login");
     }
     const data = await Product.findOne({ 'user': req.session.userid });
+    let id = req.params.id;
+    let product = await Book.findOne({ '_id': id.slice(1) });
+    if (product === null) {
+        product = await Vegi.findOne({ '_id': id.slice(1) });
+    }
     if (data === null) {
-        const newuser = new Product({ user: req.session.userid, data: [{ id: req.params.id, flag: false }] });
-        newuser.save();
-        return res.redirect('/');
+        const newuser = new Product({ user: req.session.userid, data: [product] });
+        await newuser.save();
+        return res.redirect('/orders');
     }
     const dd = data.data;
-    dd.push({ id: req.params.id, flag: false });
+    dd.push(product);
     const rrr = await Product.updateOne({ user: req.session.userid }, { $set: { data: dd } }, { upsert: true });
-    rrr.upserted;
-    res.redirect('/');
+    await rrr.upserted;
+    res.redirect('/orders');
+});
+
+app.get('/orders', async(req, res) => {
+    if (!req.session.isAuth) {
+        return res.redirect("/login");
+    }
+    const data = await Product.findOne({ 'user': req.session.userid });
+    const dd = await data.data;
+    res.render('./orders.ejs', { data: dd });
 });
 
 app.get('/register', (req, res) => {
@@ -116,7 +153,7 @@ app.get('/login', (req, res) => {
 app.post('/login', async(req, res) => {
     let { username, password } = req.body;
     const user = await User.find({ username: username });
-    if (user === []) {
+    if (user.length === 0) {
         return res.render('./login.ejs', {
             name: "This username and password does not exist",
         });
@@ -134,20 +171,80 @@ app.post('/login', async(req, res) => {
     }
     req.session.isAuth = true;
     req.session.userid = username;
-    res.redirect('/dashbord');
+    res.redirect('/');
 });
 
-app.get('/dashbord', (req, res) => {
+app.get('/profile', async(req, res) => {
     if (!req.session.isAuth) {
-        return res.render('./login.ejs', {
-            name: null,
-        });
+        return res.redirect('/createProfile');
     }
-    res.sendFile(path.resolve('./index.html'));
+
+    let user = await Profile.findOne({ user: req.session.userid });
+
+    if (user !== null) {
+        const data = await Product.findOne({ 'user': req.session.userid });
+        const dd = await data.data;
+        let total = 0;
+        dd.forEach((el) => {
+            total = total + el.price;
+        });
+        return res.render('./profile.ejs', { user: user, data: dd, total: total });
+    }
+    let data = [];
+    return res.render('./createProfile.ejs', { data: data });
+});
+
+app.get('/createProfile', (req, res) => {
+    if (!req.session.isAuth) {
+        return res.redirect("/login");
+    }
+    res.render('./createProfile.ejs', {});
+})
+
+app.post('/addprofile', async(req, res) => {
+    if (!req.session.isAuth) {
+        return res.redirect("/login");
+    }
+    const { fullname, gmail, mobile, address } = req.body;
+    const pp = new Profile({ user: req.session.userid, name: fullname, gmail: gmail, mobile: mobile, address: address });
+    pp.save();
+    res.end("added");
 });
 
 app.get('/confirm/:id', async(req, res) => {
-    const data = await Book.findOne({ id: req.params.id });
+    if (!req.session.isAuth) {
+        return res.redirect("/login");
+    }
+    const data = await Book.findOne({ '_id': req.params.id.slice(1) });
     res.render('./confirm.ejs', { data: data });
 });
+app.get('/confirmvegi/:id', async(req, res) => {
+    if (!req.session.isAuth) {
+        return res.redirect("/login");
+    }
+    const data = await Vegi.findOne({ '_id': req.params.id.slice(1) });
+    res.render('./confirm.ejs', { data: data });
+});
+
+app.post('/orderCancel/:id', async(req, res) => {
+    if (!req.session.isAuth) {
+        return res.redirect("/login");
+    }
+    const data = await Product.findOne({ 'user': req.session.userid });
+    let dd = await data.data;
+    let f = false;
+    dd = await dd.filter(el => {
+        if (el.name !== req.params.id) {
+            return el;
+        }
+        if (f) {
+            return el;
+        }
+        f = true;
+    });
+    const rrr = await Product.updateOne({ user: req.session.userid }, { $set: { data: dd } }, { upsert: true });
+    await rrr.upserted;
+    res.redirect('/orders');
+});
+
 app.listen(process.env.PORT || 3000);

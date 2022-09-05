@@ -1,5 +1,4 @@
 <!doctype html>
-
 <html lang="en">
 
 <head>
@@ -17,6 +16,10 @@
             .search {
                 margin-left: 0px;
             }
+        }
+        
+        body {
+            background-color: whitesmoke;
         }
         
         .me-2 {
@@ -40,8 +43,7 @@
         
         .product {
             text-align: center;
-            margin-top: 15vh;
-            margin-bottom: 15vh;
+            margin-top: 10px;
         }
         
         .show {
@@ -57,15 +59,15 @@
             height: 50px;
         }
         
+        nav {
+            background-color: lightseagreen;
+        }
+        
         footer {
             text-align: center;
             padding: 10px;
             background-color: lightseagreen;
-            margin-top: 20px;
-        }
-        
-        body {
-            background-color: whitesmoke;
+            margin-top: 30px;
         }
         
         footer h1 {
@@ -77,28 +79,11 @@
         p {
             font-size: 15px;
         }
-        
-        .input {
-            margin-top: 5px;
-        }
-        
-        button {
-            border: 1px solid black;
-            border-radius: 5px;
-        }
-        
-        button:hover {
-            background-color: green;
-        }
-        
-        nav {
-            background-color: lightseagreen;
-        }
     </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg ">
+    <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">SHINDE-SHOP</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -131,30 +116,24 @@
             </div>
         </div>
     </nav>
+    <div class="search">
+        <form class="d-flex" role="search">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+    </div>
     <div class="product">
-        <h1>Register Account</h1>
-        <form action="register" method="post">
-            <div class="input">
-                <label for="username">Gmail:<input name="username" type="email" required/></label><br/>
+        <% data.forEach(function(el) { %>
+            <div class="show">
+                <a href="/confirmvegi/:<%= el._id %>">
+                    <img src="<%= el.url %>" alt="img">
+                <h5>₹
+                    <%= el.price %> (1 Kg.)
+                </h5>
+                </a>
+
             </div>
-            <div class="input">
-                <label for="password">Password :<input name="password" type="password" required/> </label><br />
-            </div>
-            <div class="input">
-                <label for="re-password">Confirm-Password :<input name="repassword" type="password" required/> </label>
-                <p>
-                    <%= name %>
-                </p>
-            </div>
-            <div class="input">
-                <button type="submit">Submit</button>
-            </div>
-        </form>
-        <form action="/login" method="get">
-            <div>
-                If you have already acount please - <button>Log-In</button>
-            </div>
-        </form>
+            <% }); %>
     </div>
     <footer>
         <h1>SHINDE-SHOP</h1>

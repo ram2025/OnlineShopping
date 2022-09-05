@@ -82,14 +82,26 @@
             border-radius: 10px;
         }
         
+        #btn:hover {
+            background-color: green;
+        }
+        
         #btn {
-            width: 150px;
             background-color: greenyellow;
-            margin-left: 45%;
+            width: 150px;
         }
         
         form {
             display: inline-block;
+        }
+        
+        .ank {
+            display: inline-block;
+        }
+        
+        .btns {
+            margin-left: 40%;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -146,7 +158,10 @@
 
                 <% } %>
         </div>
-        <a href="/profile"><button id="btn">Cofirm Products</button></a>
+    </div>
+    <div class="btns">
+        <a href="/profile"><button  id="btn">Cofirm Products</button></a>
+        <a href="/"><button id="btn">Add New Product</button></a>
     </div>
     <footer>
         <h1>SHINDE-SHOP</h1>

@@ -43,6 +43,7 @@
         .show {
             display: inline-block;
             margin: 2px;
+            text-align: center;
         }
         
         .fimg {
@@ -89,6 +90,7 @@
         #btn {
             background-color: greenyellow;
             width: 150px;
+            margin-top: 10px;
         }
         
         form {
@@ -102,6 +104,12 @@
         .btns {
             margin-left: 40%;
             margin-top: 20px;
+        }
+        
+        @media only screen and (max-width: 600px) {
+            .btns {
+                margin-left: 0px;
+            }
         }
     </style>
 </head>
@@ -141,7 +149,7 @@
         </div>
     </nav>
     <div>
-        <div>
+        <div class="product">
             <% for(let i=0; i<data.length; i++) {%>
                 <div class="show">
                     <img src="<%= data[i].url %>" alt="img">
@@ -175,6 +183,7 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+
 </body>
 
 </html>

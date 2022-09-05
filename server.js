@@ -3,6 +3,15 @@ const path = require('path');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const cookieParser = require("cookie-parser");
+var nodemailer = require('nodemailer');
+
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'shindeshoponline@gmail.com',
+        pass: 'spetnxskrjzhaaui'
+    }
+});
 
 
 const app = express();
@@ -134,6 +143,13 @@ app.post('/book/:id', async(req, res) => {
     dd.push(product);
     const rrr = await Product.updateOne({ user: req.session.userid }, { $set: { data: dd } }, { upsert: true });
     await rrr.upserted;
+    var mailOptions = {
+        from: 'shindeshoponline@gmail.com',
+        to: req.session.userid,
+        subject: 'Order Confirmed',
+        html: '<div><h1>Well-Come to Shinde-Shop</h1><p>Your Order Has been Confirmed</p><h3>Happy Shopping</h3><p>Visit our website <a href="https://xyzss.herokuapp.com/">xyzss.herokuapp.com</a></></div>'
+    };
+    transporter.sendMail(mailOptions);
     res.redirect('/orders');
 });
 
@@ -161,6 +177,15 @@ app.post('/register', async(req, res) => {
     const pass = await bcrypt.hash(req.body.password, 10);
     const book1 = new User({ username: req.body.username, password: pass });
     book1.save();
+
+    var mailOptions = {
+        from: 'shindeshoponline@gmail.com',
+        to: req.body.username,
+        subject: 'Acount has been created on Shinde-Shop',
+        html: '<div><h1>Well-Come to Shinde-Shop</h1><p>Successfully your acount has been created on Shinde-Shop</p><h3>Happy Shopping</h3><p>Visit our website <a href="https://xyzss.herokuapp.com/">xyzss.herokuapp.com</a></></div>'
+    };
+    transporter.sendMail(mailOptions);
+
     res.redirect('/login');
 });
 
@@ -267,6 +292,14 @@ app.post('/orderCancel/:id', async(req, res) => {
     });
     const rrr = await Product.updateOne({ user: req.session.userid }, { $set: { data: dd } }, { upsert: true });
     await rrr.upserted;
+    var mailOptions = {
+        from: 'shindeshoponline@gmail.com',
+        to: req.session.userid,
+        subject: 'Order Canceled',
+        html: '<div><h1>Well-Come to Shinde-Shop</h1><p>Your Order Canceled</p><h3>Happy Shopping</h3><p>Visit our website <a href="https://xyzss.herokuapp.com/">xyzss.herokuapp.com</a></></div>'
+    };
+
+    transporter.sendMail(mailOptions);
     res.redirect('/orders');
 });
 

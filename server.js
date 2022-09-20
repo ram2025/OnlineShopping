@@ -28,7 +28,6 @@ app.use(session({
 
 //database connection
 const mongoose = require('mongoose');
-const { name } = require('ejs');
 const DB = 'mongodb+srv://sky:sky@cluster0.de1mtdi.mongodb.net/todo?retryWrites=true&w=majority';
 mongoose.connect(DB).then(() => {
     console.log("connection successful");
@@ -81,18 +80,6 @@ var Vegi = mongoose.model('Vegi', BookSchema, 'vegitable');
 var Electronics = mongoose.model('electronics', VegiSchema, 'electronics');
 
 
-
-// async function main() {
-//     const dd = new Electronics({
-//         url: 'https://m.media-amazon.com/images/I/61icsCcbdKL._SY450_.jpg',
-//         name: 'M1 Smart Watch',
-//         price: 1200
-//     });
-//     dd.save();
-// }
-// main();
-
-
 //middleWares
 app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
@@ -106,7 +93,13 @@ app.get('/clothes', async(req, res) => {
     if (!req.session.isAuth) {
         return res.redirect("/login");
     }
-    const data = await Book.find({});
+    const tem = await Book.find({});
+    const data = tem.filter((e) => {
+        if (e.price) {
+            return e;
+        }
+    });
+
     res.render('./clothes.ejs', { data: data });
 })
 
@@ -114,7 +107,12 @@ app.get('/vegitable', async(req, res) => {
     if (!req.session.isAuth) {
         return res.redirect("/login");
     }
-    const data = await Vegi.find({});
+    const tem = await Vegi.find({});
+    const data = tem.filter((e) => {
+        if (e.price) {
+            return e;
+        }
+    });
     res.render('./vegi.ejs', { data: data });
 });
 
@@ -307,7 +305,12 @@ app.get('/electronics', async(req, res) => {
     if (!req.session.isAuth) {
         return res.redirect("/login");
     }
-    const data = await Electronics.find({});
+    const tem = await Electronics.find({});
+    const data = tem.filter((e) => {
+        if (e.price) {
+            return e;
+        }
+    });
     res.render('./clothes.ejs', { data: data });
 
 })
